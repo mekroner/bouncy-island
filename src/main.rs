@@ -5,6 +5,7 @@ mod debug_utils;
 mod key_bindings;
 mod map;
 mod player;
+mod coin;
 
 use bevy::prelude::*;
 use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
