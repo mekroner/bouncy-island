@@ -7,6 +7,7 @@ mod map;
 mod player;
 
 use bevy::prelude::*;
+use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_rapier3d::prelude::*;
 
@@ -28,6 +29,8 @@ fn main() {
             ..default()
         })
         .add_plugins(RapierDebugRenderPlugin::default())
+        .add_plugins(FrameTimeDiagnosticsPlugin::default())
+        .add_plugins(LogDiagnosticsPlugin::default())
         .add_systems(Startup, setup)
         .add_systems(
             Update,
@@ -39,7 +42,7 @@ fn main() {
             ),
         )
         .add_systems(Update, check_game_over)
-        .add_systems(Update, debug_material_color)
+        .add_systems(Update, (debug_material_color, debug_map_material_color))
         .run();
 }
 
@@ -57,17 +60,6 @@ fn setup(
         },
         ..default()
     });
-
-    // cmd.spawn(PbrBundle {
-    //     mesh: meshes.add(Plane3d::default().mesh().size(50.0, 50.0)),
-    //     material: materials.add(Color::WHITE),
-    //     ..default()
-    // })
-    // .insert(Collider::cuboid(25.0, 0.1, 25.0))
-    // .insert(Friction {
-    //     coefficient: 0.9,
-    //     combine_rule: CoefficientCombineRule::Average,
-    // });
 
     cmd.spawn((
         PbrBundle {
@@ -145,7 +137,9 @@ fn player_move(
                 ext_force.force = force * values.move_multipier(state);
                 ext_impulse.impulse += jump_impulse;
             }
-            Grounded::Airborne => (),
+            Grounded::Airborne => {
+                ext_force.force = Vec3::ZERO;
+            },
         }
     }
 }

@@ -7,6 +7,7 @@ pub struct PlayerPhysicsBundle {
     rigid_body: RigidBody,
     collider: Collider,
     mass_properties: ColliderMassProperties,
+    friction: Friction,
     damping: Damping,
     active_events: ActiveEvents,
     external_force: ExternalForce,
@@ -20,8 +21,12 @@ impl Default for PlayerPhysicsBundle {
             rigid_body: RigidBody::Dynamic,
             collider: Collider::ball(0.5),
             mass_properties: ColliderMassProperties::Density(2.0),
+            friction: Friction {
+                coefficient: 1.0,
+                combine_rule: CoefficientCombineRule::Average,
+            },
             damping: Damping {
-                linear_damping: 1.0,
+                linear_damping: 0.2,
                 ..default()
             },
             active_events: ActiveEvents::COLLISION_EVENTS,
