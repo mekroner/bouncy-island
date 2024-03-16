@@ -29,9 +29,9 @@ fn main() {
             gravity: Vec3::new(0.0, -19.62, 0.0),
             ..default()
         })
-        .add_plugins(RapierDebugRenderPlugin::default())
-        .add_plugins(FrameTimeDiagnosticsPlugin::default())
-        .add_plugins(LogDiagnosticsPlugin::default())
+        // .add_plugins(RapierDebugRenderPlugin::default())
+        // .add_plugins(FrameTimeDiagnosticsPlugin::default())
+        // .add_plugins(LogDiagnosticsPlugin::default())
         .add_systems(Startup, setup)
         .add_systems(
             Update,
@@ -229,40 +229,6 @@ fn player_action_system(
             }
             (Grounded::Airborne, _) => {
                 // info!("ActionState changes for airborne not jet implemented!")
-            }
-        }
-    }
-}
-
-fn horizontal_velocity(linvel: Vec3) -> f32 {
-    let mut h = linvel;
-    h.y = 0.0;
-    h.length()
-}
-
-fn limit_horizontal_velocity(linvel: Vec3, maxvel: f32) -> Vec3 {
-    if horizontal_velocity(linvel) <= maxvel {
-        return linvel;
-    }
-    let result = linvel.normalize_or_zero() * maxvel;
-    Vec3::new(result.x, linvel.y, result.z)
-}
-
-fn limit_max_velocity(mut query: Query<(&PlayerActionState, &mut Velocity), With<Player>>) {
-    for (state, mut velocity) in query.iter_mut() {
-        info!("Velocity: {:?}", horizontal_velocity(velocity.linvel));
-        match state {
-            PlayerActionState::Idle => {
-                velocity.linvel = limit_horizontal_velocity(velocity.linvel, 5.0)
-            }
-            PlayerActionState::PrepareAttack(_) => {
-                velocity.linvel = limit_horizontal_velocity(velocity.linvel, 2.0)
-            }
-            PlayerActionState::Attack(_, _) => {
-                velocity.linvel = limit_horizontal_velocity(velocity.linvel, 20.0)
-            }
-            PlayerActionState::Shield(_) => {
-                velocity.linvel = limit_horizontal_velocity(velocity.linvel, 2.0)
             }
         }
     }
