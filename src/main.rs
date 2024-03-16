@@ -24,14 +24,14 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_plugins(WorldInspectorPlugin::new())
         .add_plugins(RapierPhysicsPlugin::<NoUserData>::default())
-        .add_plugins((camera::CameraPlugin::default(), map::MapPlugin))
+        .add_plugins((camera::CameraPlugin::default(), map::MapPlugin, coin::CoinSpawnerPlugin::default()))
         .insert_resource(RapierConfiguration {
             gravity: Vec3::new(0.0, -19.62, 0.0),
             ..default()
         })
-        // .add_plugins(RapierDebugRenderPlugin::default())
-        // .add_plugins(FrameTimeDiagnosticsPlugin::default())
-        // .add_plugins(LogDiagnosticsPlugin::default())
+        .add_plugins(RapierDebugRenderPlugin::default())
+        .add_plugins(FrameTimeDiagnosticsPlugin::default())
+        .add_plugins(LogDiagnosticsPlugin::default())
         .add_systems(Startup, setup)
         .add_systems(
             Update,
