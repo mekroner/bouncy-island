@@ -6,6 +6,7 @@ mod key_bindings;
 mod map;
 mod player;
 mod coin;
+mod coin_collector;
 
 use bevy::prelude::*;
 use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
