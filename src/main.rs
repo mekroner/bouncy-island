@@ -1,3 +1,4 @@
+use std::f32::consts::PI;
 use std::time::Duration;
 
 mod camera;
@@ -35,10 +36,9 @@ fn main() {
             gravity: Vec3::new(0.0, -19.62, 0.0),
             ..default()
         })
-        // .add_plugins(RapierDebugRenderPlugin::default())
-        // .add_plugins(FrameTimeDiagnosticsPlugin::default())
-        // .add_plugins(LogDiagnosticsPlugin::default())
-        // .add_plugins(LogDiagnosticsPlugin::default())
+        .add_plugins(RapierDebugRenderPlugin::default())
+        .add_plugins(FrameTimeDiagnosticsPlugin::default())
+        .add_plugins(LogDiagnosticsPlugin::default())
         .add_systems(Startup, setup)
         .add_systems(
             Update,
@@ -67,14 +67,25 @@ fn setup(
     mut materials: ResMut<Assets<StandardMaterial>>,
     mut meshes: ResMut<Assets<Mesh>>,
 ) {
-    cmd.spawn(PointLightBundle {
-        transform: Transform::from_xyz(0.0, 5.0, 0.0),
-        point_light: PointLight {
-            intensity: 1_000_000.0,
-            range: 100.0,
-            // shadows_enabled: true,
+    cmd.spawn(DirectionalLightBundle {
+        directional_light: DirectionalLight {
+            illuminance: 1_000.0,
+            shadows_enabled: true,
             ..default()
         },
+        transform: Transform::from_rotation(Quat::from_rotation_x(-PI / 4.0)),
+        ..default()
+    });
+
+    // Water
+    cmd.spawn(PbrBundle {
+        mesh: meshes.add(Plane3d::default().mesh().size(100.0, 100.0)),
+        material: materials.add(StandardMaterial {
+            base_color: Color::ALICE_BLUE,
+            specular_transmission: 0.9,
+            ..default()
+        }),
+        transform: Transform::from_xyz(0.0, 0.0, 0.0),
         ..default()
     });
 

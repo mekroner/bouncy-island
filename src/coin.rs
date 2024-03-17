@@ -52,7 +52,10 @@ struct Rotated(f32);
 
 impl Default for CoinTimer {
     fn default() -> Self {
-        Self(Timer::new(Duration::from_millis(1000), TimerMode::Repeating))
+        Self(Timer::new(
+            Duration::from_millis(1000),
+            TimerMode::Repeating,
+        ))
     }
 }
 
@@ -60,7 +63,10 @@ impl Plugin for CoinSpawnerPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(self.descriptor.clone())
             .insert_resource(CoinTimer::default())
-            .add_systems(Update, (spawn_coins, update_rotated, tick_timer));
+            .add_systems(
+                Update,
+                (spawn_coins, update_rotated, tick_timer, despawn_coins),
+            );
     }
 }
 
@@ -101,4 +107,13 @@ fn update_rotated(time: Res<Time>, mut query: Query<(&mut Transform, &Rotated)>)
 
 fn tick_timer(time: Res<Time>, mut timer: ResMut<CoinTimer>) {
     timer.tick(time.delta());
+}
+
+fn despawn_coins(mut cmd: Commands, query: Query<(Entity, &Transform), With<Coin>>) {
+    for (e, trans) in query.iter() {
+        if trans.translation.y >= -1.0 {
+            continue;
+        }
+        cmd.entity(e).despawn();
+    }
 }
