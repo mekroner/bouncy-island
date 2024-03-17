@@ -1,19 +1,20 @@
 use std::time::Duration;
 
 mod camera;
+mod coin;
+mod coin_collector;
 mod debug_utils;
 mod key_bindings;
 mod map;
 mod player;
-mod coin;
-mod coin_collector;
 
-use bevy::prelude::*;
 use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
+use bevy::prelude::*;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_rapier3d::prelude::*;
 
 use camera::CameraTarget;
+use coin_collector::{collect_coins, debug_log_coin_collection, CoinCollection};
 use debug_utils::*;
 use key_bindings::KeyBindings;
 use player::player::*;
@@ -25,14 +26,19 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_plugins(WorldInspectorPlugin::new())
         .add_plugins(RapierPhysicsPlugin::<NoUserData>::default())
-        .add_plugins((camera::CameraPlugin::default(), map::MapPlugin, coin::CoinSpawnerPlugin::default()))
+        .add_plugins((
+            camera::CameraPlugin::default(),
+            map::MapPlugin,
+            coin::CoinSpawnerPlugin::default(),
+        ))
         .insert_resource(RapierConfiguration {
             gravity: Vec3::new(0.0, -19.62, 0.0),
             ..default()
         })
-        .add_plugins(RapierDebugRenderPlugin::default())
-        .add_plugins(FrameTimeDiagnosticsPlugin::default())
-        .add_plugins(LogDiagnosticsPlugin::default())
+        // .add_plugins(RapierDebugRenderPlugin::default())
+        // .add_plugins(FrameTimeDiagnosticsPlugin::default())
+        // .add_plugins(LogDiagnosticsPlugin::default())
+        // .add_plugins(LogDiagnosticsPlugin::default())
         .add_systems(Startup, setup)
         .add_systems(
             Update,
@@ -43,8 +49,16 @@ fn main() {
                 player_collision_system,
             ),
         )
+        .add_systems(Update, collect_coins)
         .add_systems(Update, check_game_over)
-        .add_systems(Update, (debug_material_color, debug_map_material_color))
+        .add_systems(
+            Update,
+            (
+                debug_material_color,
+                debug_map_material_color,
+                debug_log_coin_collection,
+            ),
+        )
         .run();
 }
 
@@ -58,6 +72,7 @@ fn setup(
         point_light: PointLight {
             intensity: 1_000_000.0,
             range: 100.0,
+            // shadows_enabled: true,
             ..default()
         },
         ..default()
@@ -73,7 +88,8 @@ fn setup(
         PlayerPhysicsBundle::default(),
         PlayerBundle::default(),
         CameraTarget,
-    ));
+    ))
+    .insert(CoinCollection { num: 0 });
 
     // spawn practice target
     cmd.spawn((
@@ -141,7 +157,7 @@ fn player_move(
             }
             Grounded::Airborne => {
                 ext_force.force = Vec3::ZERO;
-            },
+            }
         }
     }
 }

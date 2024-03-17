@@ -5,7 +5,7 @@ use bevy_rapier3d::prelude::*;
 use rand::Rng;
 
 #[derive(Component)]
-struct Coin;
+pub struct Coin;
 
 #[derive(Bundle)]
 struct CoinPhysicsBundle {
@@ -38,8 +38,8 @@ struct CoinSpawnerDescriptor {
 impl Default for CoinSpawnerDescriptor {
     fn default() -> Self {
         Self {
-            spawn_radius: 8,
-            spawn_height: 10.0,
+            spawn_radius: 16,
+            spawn_height: 16.0,
         }
     }
 }
@@ -52,7 +52,7 @@ struct Rotated(f32);
 
 impl Default for CoinTimer {
     fn default() -> Self {
-        Self(Timer::new(Duration::from_millis(800), TimerMode::Repeating))
+        Self(Timer::new(Duration::from_millis(1000), TimerMode::Repeating))
     }
 }
 

@@ -22,11 +22,11 @@ impl Default for PlayerPhysicsBundle {
             collider: Collider::ball(0.5),
             mass_properties: ColliderMassProperties::Density(2.0),
             friction: Friction {
-                coefficient: 1.0,
+                coefficient: 0.5,
                 combine_rule: CoefficientCombineRule::Average,
             },
             damping: Damping {
-                linear_damping: 0.2,
+                linear_damping: 0.0,
                 ..default()
             },
             active_events: ActiveEvents::COLLISION_EVENTS,
