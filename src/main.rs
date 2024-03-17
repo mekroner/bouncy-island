@@ -8,6 +8,7 @@ mod debug_utils;
 mod key_bindings;
 mod map;
 mod player;
+mod ui;
 
 use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 use bevy::prelude::*;
