@@ -9,8 +9,10 @@ mod key_bindings;
 mod map;
 mod player;
 mod ui;
+mod water;
 
 use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
+use bevy::pbr::wireframe::{WireframeConfig, WireframePlugin};
 use bevy::prelude::*;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_rapier3d::prelude::*;
@@ -25,17 +27,24 @@ fn main() {
     App::new()
         .init_resource::<KeyBindings>()
         .init_resource::<PlayerActionValues>()
+        .insert_resource(Msaa::Off)
         .add_plugins(DefaultPlugins)
         .add_plugins(WorldInspectorPlugin::new())
         .add_plugins(RapierPhysicsPlugin::<NoUserData>::default())
         .add_plugins((
             camera::CameraPlugin::default(),
             map::MapPlugin,
-            coin::CoinSpawnerPlugin::default(),
+            water::WaterPlugin::default(),
+            // coin::CoinSpawnerPlugin::default(),
         ))
         .insert_resource(RapierConfiguration {
             gravity: Vec3::new(0.0, -19.62, 0.0),
             ..default()
+        })
+        .add_plugins(WireframePlugin)
+        .insert_resource(WireframeConfig {
+            global: true,
+            default_color: Color::WHITE,
         })
         .add_plugins(RapierDebugRenderPlugin::default())
         .add_plugins(FrameTimeDiagnosticsPlugin::default())
@@ -56,7 +65,7 @@ fn main() {
             Update,
             (
                 debug_material_color,
-                debug_map_material_color,
+                // debug_map_material_color,
                 debug_log_coin_collection,
             ),
         )
@@ -75,18 +84,6 @@ fn setup(
             ..default()
         },
         transform: Transform::from_rotation(Quat::from_rotation_x(-PI / 4.0)),
-        ..default()
-    });
-
-    // Water
-    cmd.spawn(PbrBundle {
-        mesh: meshes.add(Plane3d::default().mesh().size(100.0, 100.0)),
-        material: materials.add(StandardMaterial {
-            base_color: Color::ALICE_BLUE,
-            specular_transmission: 0.9,
-            ..default()
-        }),
-        transform: Transform::from_xyz(0.0, 0.0, 0.0),
         ..default()
     });
 
