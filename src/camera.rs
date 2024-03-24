@@ -1,4 +1,4 @@
-use bevy::{math::vec3, prelude::*};
+use bevy::{core_pipeline::prepass::DepthPrepass, math::vec3, prelude::*};
 
 #[derive(Default)]
 pub struct CameraPlugin {
@@ -34,6 +34,7 @@ fn spawn_camera(mut cmd: Commands, descriptor: Res<CameraDescriptor>) {
                 .looking_at(Vec3::ZERO, Vec3::Y),
             ..default()
         },
+        DepthPrepass,
         MainCamera,
     ));
 }

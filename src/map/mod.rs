@@ -49,7 +49,7 @@ impl Default for MapDescriptor {
             tile_size: 2.0,
             tile_height: 2.0,
             radius: 8,
-            constitution_reduction_rate: 1.0,
+            constitution_reduction_rate: 3.0,
         }
     }
 }

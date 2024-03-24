@@ -41,12 +41,12 @@ fn main() {
             gravity: Vec3::new(0.0, -19.62, 0.0),
             ..default()
         })
-        .add_plugins(WireframePlugin)
-        .insert_resource(WireframeConfig {
-            global: true,
-            default_color: Color::WHITE,
-        })
-        .add_plugins(RapierDebugRenderPlugin::default())
+        // .add_plugins(WireframePlugin)
+        // .insert_resource(WireframeConfig {
+        //     global: true,
+        //     default_color: Color::WHITE,
+        // })
+        // .add_plugins(RapierDebugRenderPlugin::default())
         .add_plugins(FrameTimeDiagnosticsPlugin::default())
         .add_plugins(LogDiagnosticsPlugin::default())
         .add_systems(Startup, setup)
@@ -66,7 +66,7 @@ fn main() {
             (
                 debug_material_color,
                 // debug_map_material_color,
-                debug_log_coin_collection,
+                // debug_log_coin_collection,
             ),
         )
         .run();
@@ -83,7 +83,7 @@ fn setup(
             shadows_enabled: true,
             ..default()
         },
-        transform: Transform::from_rotation(Quat::from_rotation_x(-PI / 4.0)),
+        transform: Transform::from_rotation(Quat::from_euler(EulerRot::XYZ, -PI/4.0, -PI/4.0, 0.0)),
         ..default()
     });
 

@@ -1,8 +1,10 @@
 use bevy::{
+    pbr::{ExtendedMaterial, MaterialExtension, NotShadowCaster},
     prelude::*,
     render::{
         mesh::{Indices, PrimitiveTopology},
         render_asset::RenderAssetUsages,
+        render_resource::AsBindGroup,
     },
 };
 
@@ -29,6 +31,7 @@ pub struct WaterPlugin {
 impl Plugin for WaterPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(self.descriptor.clone())
+            .add_plugins(MaterialPlugin::<WaterMaterial>::default())
             .add_systems(Startup, spawn_water);
     }
 }
@@ -36,21 +39,23 @@ impl Plugin for WaterPlugin {
 fn spawn_water(
     mut cmd: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<StandardMaterial>>,
+    mut materials: ResMut<Assets<WaterMaterial>>,
     des: Res<WaterPluginDescriptor>,
 ) {
     let mesh = meshes.add(create_plane(des.size, des.sub_divisions));
-    let material = materials.add(StandardMaterial {
-        base_color: Color::ALICE_BLUE,
-        specular_transmission: 0.9,
-        ..default()
+    let material = materials.add(WaterMaterial {
+        base: StandardMaterial {
+            base_color: Color::ALICE_BLUE,
+            ..default()
+        },
+        extension: WaterExtension { ..default() },
     });
-    cmd.spawn(PbrBundle {
+    cmd.spawn(MaterialMeshBundle {
         mesh,
         material,
         transform: Transform::from_xyz(0.0, 0.0, 0.0),
         ..default()
-    });
+    }).insert(NotShadowCaster);
 }
 
 fn create_plane(size: f32, sub_div: u32) -> Mesh {
@@ -98,4 +103,28 @@ fn create_plane(size: f32, sub_div: u32) -> Mesh {
     .with_inserted_attribute(Mesh::ATTRIBUTE_POSITION, vertex_positions)
     .with_inserted_attribute(Mesh::ATTRIBUTE_NORMAL, normals)
     .with_inserted_indices(Indices::U32(indices))
+}
+
+type WaterMaterial = ExtendedMaterial<StandardMaterial, WaterExtension>;
+
+#[derive(Asset, AsBindGroup, Reflect, Debug, Clone, Default)]
+struct WaterExtension {}
+
+#[cfg(not(feature = "embed_shaders"))]
+fn water_vertex_shader() -> bevy::render::render_resource::ShaderRef {
+    "shaders/water.wgsl".into()
+}
+
+impl MaterialExtension for WaterExtension {
+    fn vertex_shader() -> bevy::render::render_resource::ShaderRef {
+        water_vertex_shader()
+    }
+
+    // fn deferred_vertex_shader() -> bevy::render::render_resource::ShaderRef {
+    //     "shaders/water.wgsl".into()
+    // }
+
+    // fn fragment_shader() -> bevy::render::render_resource::ShaderRef {
+    //     "shaders/water.wgsl".into()
+    // }
 }
